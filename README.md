@@ -100,7 +100,16 @@ Same universe, same rebalance dates, same 1/VaR weights, same costs. The only di
 1. **Selection.** Before costs, the MST picks sit at the 50th percentile of random picks. They are not better than chance.
 2. **Turnover.** After costs, the MST rises to the 60th percentile. This comes from lower turnover (MST keeps 2–3 of its 5 stocks each month; random picks replace almost all of them), not from better picks. It is still within the range of luck.
 3. **VaR weighting.** The weights do differ (about 16%–29% in the first month), and VaR weighting slightly lowers volatility. But the 5 selected stocks move closely together, so shifting money among them barely changes the portfolio (Sharpe 0.62 vs 0.63).
-4. **What the network captures.** In a typical pair (e.g. AAPL–MSFT), the lagged VAR coefficient is small, but θ is still about 0.26. Most of θ comes from the **same-day correlation** of the VAR residuals, not from yesterday-to-today effects. So the network is close to a correlation network, and high-degree stocks behave like a concentrated "mini market": higher volatility and deeper drawdowns than the equal-weight universe. (The paper notes a similar idea: the method acts like "a compressed version of the S&P 500.")
+4. **What the network captures.** For AAPL–MSFT in the first window, the lagged VAR coefficients are small (|a| ≤ 0.15), but θ is still about 0.26. Almost all of it comes from the **same-day correlation** of the VAR residuals (0.58), not from yesterday-to-today effects (`scripts/pair_example.py`):
+
+   | AAPL–MSFT, 2019-07-02 to 2019-12-19 | θ (MSFT → AAPL) | θ (AAPL → MSFT) |
+   |---|---|---|
+   | Full (h = 10) | 0.260 | 0.253 |
+   | Same-day term only (h = 1) | 0.254 | 0.254 |
+   | Residual correlation removed | 0.014 | 0.001 |
+
+   So the network is close to a correlation network, and high-degree stocks behave like a concentrated "mini market": higher volatility and deeper drawdowns than the equal-weight universe. (The paper notes a similar idea: the method acts like "a compressed version of the S&P 500.")
+
 5. **Noise.** With 5 years of data, the standard error of a Sharpe ratio is roughly √(1/5) ≈ 0.45. All Sharpe differences above are well inside this range. The random portfolios alone range from about −0.1 to 1.2.
 
 ---
@@ -138,7 +147,8 @@ Same universe, same rebalance dates, same 1/VaR weights, same costs. The only di
 │   └── plots.py
 ├── scripts/
 │   ├── download_data.py       # -> data/returns.csv
-│   └── run_backtest.py        # -> results/*.csv, results/figures/*.png
+│   ├── run_backtest.py        # -> results/*.csv, results/figures/*.png
+│   └── pair_example.py        # AAPL-MSFT: where FEVD dependence comes from
 ├── tests/test_core.py         # unit tests (pytest)
 └── results/                   # outputs used in this README
 ```
@@ -149,6 +159,7 @@ Same universe, same rebalance dates, same 1/VaR weights, same costs. The only di
 pip install -r requirements.txt
 python scripts/download_data.py     # optional: data/returns.csv is included
 python scripts/run_backtest.py      # about 6 minutes (2 for selection, 4 for 1,000 random runs)
+python scripts/pair_example.py      # the AAPL-MSFT example (seconds)
 pytest                              # 17 unit tests
 ```
 
