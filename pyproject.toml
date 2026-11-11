@@ -1,0 +1,21 @@
+[project]
+name = "netport"
+version = "0.1.0"
+description = "Dependency-network stock selection (VAR + FEVD + MST) with transaction costs and a random benchmark"
+requires-python = ">=3.10"
+dependencies = ["numpy", "pandas", "scipy", "matplotlib"]
+
+[project.optional-dependencies]
+data = ["yfinance"]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
